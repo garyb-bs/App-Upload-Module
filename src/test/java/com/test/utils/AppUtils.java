@@ -3,6 +3,9 @@ package com.test.utils;
 import io.restassured.authentication.PreemptiveBasicAuthScheme;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
@@ -13,6 +16,8 @@ import java.util.List;
 import static io.restassured.RestAssured.*;
 
 public final class AppUtils {
+
+    private static Response response;
 
     private AppUtils() {}
 
@@ -47,20 +52,18 @@ public final class AppUtils {
         }
     }
 
-    private static void doURLUpload(String url, String customID, String app) {
-        given()
-                .header("Content-Type", "multipart/form-data")
-                .multiPart("url", url, "text")
-                .param("custom_id", customID)
-                .post(app);
-    }
-
-    private static void doFileUpload(File fileToUpload, String customID, String app) {
-        given()
-                .header("Content-Type", "multipart/form-data")
-                .multiPart("file", fileToUpload)
-                .param("custom_id", customID)
-                .post(app);
+    public static void uploadAppiumApp(String appCustomID, boolean fileUpload, boolean urlUpload, File appFile, String appFileURL) {
+        List<String> customIds = get("recent_apps/" + appCustomID).jsonPath().getList("custom_id");
+        if (customIds == null) {
+            System.out.println("Uploading app ...");
+            if (fileUpload && !urlUpload) {
+                doFileUpload(appFile, appCustomID, "upload");
+            } else if (!fileUpload && urlUpload) {
+                doURLUpload(appFileURL, appCustomID, "upload");
+            }
+        } else {
+            System.out.println("Using previously uploaded app...");
+        }
     }
 
     public static void uploadApp(String appCustomID, boolean fileUpload, boolean urlUpload, File appFile, String appFileURL) {
@@ -90,6 +93,32 @@ public final class AppUtils {
         } else {
             System.out.println("Using previously uploaded test suite...");
         }
+    }
+
+    private static String getAppUrl() {
+        JsonPath json = response.getBody().jsonPath();
+        System.out.println("App Url: " + json.get("app_url"));
+        return json.get("app_url");
+    }
+
+    private static void doURLUpload(String url, String customID, String app) {
+        response = given()
+                .header("Content-Type", "multipart/form-data")
+                .multiPart("url", url, "text")
+                .param("custom_id", customID)
+                .post(app);
+
+        getAppUrl();
+    }
+
+    private static void doFileUpload(File fileToUpload, String customID, String app) {
+        response = given()
+                .header("Content-Type", "multipart/form-data")
+                .multiPart("file", fileToUpload)
+                .param("custom_id", customID)
+                .post(app);
+
+        getAppUrl();
     }
 
 }
