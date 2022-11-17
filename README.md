@@ -15,7 +15,7 @@ App and Test Suite upload module using [TestNG](http://testng.org) to upload you
 
 Set up your paths to your apps and test suites, custom IDs etc. See the below code snippet that shows where to update:
 
-###Espresso and XCUITest
+### Espresso and XCUITest
 ```java
     // path to JSON file (does not need to be updated)
     private static String jsonFilePath = "src/test/resources/app/<espresso or xcuitest>.json";
@@ -37,7 +37,7 @@ Set up your paths to your apps and test suites, custom IDs etc. See the below co
     private boolean doUrlUpload = false;
 ```
 
-###Appium
+### Appium
 ```java
     // Provide unique custom IDs (if IDs exist, it will use the
     private static String appCustomID = "TheCalculatorAppAndroid";
@@ -72,7 +72,7 @@ Or simply right click anywhere in the [EspressoTest.java](./src/test/java/com/te
   ```
 Or simply right click anywhere in the [XCUITest.java](./src/test/java/com/test/XCUITest.java) file and click "**Run XCUITest**  
 
-####Appium Tests
+#### Appium Tests
 
 - Run an Appium test.
   ```
